@@ -205,19 +205,24 @@
     // handled by shelfClose button });
     // no modal overlay anymore }});
 
-    $join.addEventListener('click', ()=>{
+    $join.addEventListener('click', async ()=>{
       const v = ($email.value||'').trim();
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){
         $msg.textContent = 'Entre un email valide.'; return;
       }
+      $msg.textContent = 'Envoi…';
       try{
-        const key = 'galaemd_waitlist';
-        const list = JSON.parse(localStorage.getItem(key) || '[]');
-        if(!list.includes(v)) list.push(v);
-        localStorage.setItem(key, JSON.stringify(list));
+        await fetch('https://script.google.com/macros/s/AKfycbzaGnIrDFa_5Y8kNqD5XY5fHLgYyVLnTi75yQ0-yv2S63g_Xmybdl6DRGtzEowe7Hxp/exec', {
+          method:'POST',
+          mode:'no-cors',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({email:v})
+        });
         $msg.textContent = 'Merci, tu es sur la liste prioritaire.';
+        $email.value = '';
       }catch(err){
-        $msg.textContent = 'Inscription enregistrée.';
+        console.error(err);
+        $msg.textContent = 'Erreur, réessaie plus tard.';
       }
     });
 
